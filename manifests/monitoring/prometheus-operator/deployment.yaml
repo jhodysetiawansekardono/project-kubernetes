@@ -75,7 +75,11 @@ spec:
           runAsNonRoot: true
           runAsUser: 65532
       nodeSelector:
-        kubernetes.io/os: linux
+        node-role.kubernetes.io/monitoring: ""
+      tolerations:
+        - key: node-role.kubernetes.io/monitoring
+          effect: NoSchedule
+          operator: Exists
       securityContext:
         runAsNonRoot: true
         runAsUser: 65534
