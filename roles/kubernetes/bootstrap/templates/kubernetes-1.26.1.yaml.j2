@@ -4,8 +4,6 @@ kubernetesVersion: "v1.26.1"
 controlPlaneEndpoint: "{{ K8S_API_ENDPOINTS }}:6443"
 clusterName: {{ CLUSTER_NAME }}
 apiServer:
-  extraArgs:
-    enable-aggregator-routing: "true"
   certSANs:
   - "127.0.0.1"
   - "localhost"
