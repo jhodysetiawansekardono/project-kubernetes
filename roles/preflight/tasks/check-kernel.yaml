@@ -1,0 +1,4 @@
+---
+- name: Display OS name and version
+  debug:
+    msg: "The operating system is {{ ansible_distribution }} version {{ ansible_distribution_version }} with kernel {{ ansible_kernel }}"

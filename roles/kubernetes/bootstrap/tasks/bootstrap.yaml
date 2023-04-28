@@ -1,0 +1,39 @@
+---
+- name: Check if kubeadm has been initialized
+  stat:
+    path: /etc/kubernetes/kubelet.conf
+  register: kubeadm_initialized_status
+
+- name: Creating kubeadm config file
+  template:
+    src: templates/kubernetes-1.26.1.yaml.j2
+    dest: /tmp/kubeadm-config.yaml
+  when: not kubeadm_initialized_status.stat.exists
+
+- name: Initialize the first control plane
+  shell: |
+    kubeadm init --config /tmp/kubeadm-config.yaml
+  when: not kubeadm_initialized_status.stat.exists
+
+- name: Create kubeconfig directory
+  file:
+    path: /home/ubuntu/.kube
+    state: directory
+    group: ubuntu
+    owner: ubuntu
+
+- name: Writing kubeconfig manifest
+  copy:
+    src: /etc/kubernetes/admin.conf
+    dest: /home/ubuntu/.kube/config
+    group: ubuntu
+    owner: ubuntu
+    mode: 0600
+    remote_src: true
+
+- name: Wait for Kubernetes API server to be ready
+  wait_for:
+    host: localhost
+    port: 6443
+    delay: 5
+    timeout: 300

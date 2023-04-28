@@ -1,0 +1,54 @@
+---
+- hosts: all
+  strategy: linear
+  any_errors_fatal: true
+  vars_files:
+  - variables.yaml
+  roles:
+  - { role: preflight, tags: preflight }
+
+- hosts: k8s_cluster
+  gather_facts: false
+  strategy: linear
+  any_errors_fatal: true
+  vars_files:
+  - variables.yaml
+  roles:
+  - { role: preinstall, tags: preinstall }
+  - { role: container-engine/containerd, tags: install-cri }
+  - { role: kubernetes/install, tags: install-kubernetes }
+
+- hosts: control_plane[0]
+  gather_facts: false
+  any_errors_fatal: true
+  vars_files:
+  - variables.yaml
+  roles:
+  - { role: kubernetes/bootstrap, tags: bootstrap-cluster }
+
+- hosts: control_plane[1:2]
+  gather_facts: false
+  any_errors_fatal: true
+  vars_files:
+  - variables.yaml
+  roles:
+  - { role: kubernetes/control-plane, tags: join-controllers }
+
+- hosts: workers
+  gather_facts: false
+  strategy: linear
+  any_errors_fatal: true
+  vars_files:
+  - variables.yaml
+  roles:
+  - { role: kubernetes/workers, tags: join-workers }
+
+- hosts: control_plane
+  gather_facts: false
+  strategy: linear
+  any_errors_fatal: true
+  vars_files:
+  - variables.yaml
+  roles:
+  - { role: kubernetes/kubelet, tags: configure-apiserver }
+  - { role: helm, tags: install-helm }

@@ -1,0 +1,17 @@
+controller:
+  kind: DaemonSet
+  metrics:
+    enabled: true
+  podAnnotations:
+    prometheus.io/scrape: true
+    prometheus.io/port: 10254
+  extraArgs:
+    default-server-port: 8771
+  hostNetwork: true
+  hostPort:
+    enabled: true
+    ports:
+      http: 80
+      https: 443
+  service:
+    enabled: false

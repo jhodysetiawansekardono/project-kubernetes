@@ -1,0 +1,52 @@
+---
+- name: Install depedencies
+  apt:
+    name: haproxy
+    update_cache: yes
+    state: present
+  environment: "{{ PROXY }}"
+  when: "'administrator' in group_names"
+
+- name: Disable auto updates for loadbalancer packages
+  tags: install-loadbalancer
+  dpkg_selections:
+    name: haproxy
+    selection: hold
+  when: "'administrator' in group_names"
+
+- name: Writing loadbalancer configuration
+  template:
+    src: templates/haproxy.cfg.j2
+    dest: /etc/haproxy/haproxy.cfg
+  when: "'administrator' in group_names"
+  notify:
+  - Restart HAProxy
+
+- name: Add apt signing key
+  apt_key:
+    url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
+    state: present
+  environment: "{{ PROXY }}"
+  when: "'administrator' in group_names"
+
+- name: Add apt repository
+  apt_repository:
+    repo: deb https://apt.kubernetes.io/ kubernetes-xenial main
+    state: present
+    filename: kubernetes.list
+  environment: "{{ PROXY }}"
+  when: "'administrator' in group_names"
+
+- name: Install packages
+  apt:
+    name: kubectl=1.26.1-00
+    state: present
+    update_cache: yes
+  environment: "{{ PROXY }}"
+  when: "'administrator' in group_names"
+
+- name: Disable auto update
+  dpkg_selections:
+    name: kubectl
+    selection: hold
+  when: "'administrator' in group_names"

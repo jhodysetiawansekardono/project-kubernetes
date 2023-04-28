@@ -1,0 +1,31 @@
+- name: Install depedencies
+  apt:
+    name: "{{ packages }}"
+    update_cache: yes
+    state: present
+  vars:
+    packages:
+    - apt-transport-https
+    - ca-certificates
+    - curl
+    - gnupg
+    - lsb-release
+    - nfs-common
+    - glusterfs-client
+    - tree
+    - jq
+    - sysstat
+    - iperf
+    - arping
+    - net-tools
+    - dnsutils
+    - traceroute
+  environment: "{{ PROXY }}"
+
+- name: Install NFS Server
+  apt:
+    name: "nfs-kernel-server"
+    update_cache: yes
+    state: present
+  when: "'storages' in group_names"
+  environment: "{{ PROXY }}"

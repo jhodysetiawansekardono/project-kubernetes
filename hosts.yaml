@@ -1,0 +1,55 @@
+all:
+  hosts:
+    node1:
+      ansible_host: REPLACE_WITH_IP
+      ansible_name: master-01
+    node2:
+      ansible_host: REPLACE_WITH_IP
+      ansible_name: master-02
+    node3:
+      ansible_host: REPLACE_WITH_IP
+      ansible_name: master-03
+    node4:
+      ansible_host: REPLACE_WITH_IP
+      ansible_name: worker-01
+    node5:
+      ansible_host: REPLACE_WITH_IP
+      ansible_name: worker-02
+    node6:
+      ansible_host: REPLACE_WITH_IP
+      ansible_name: worker-03
+    node7:
+      ansible_host: REPLACE_WITH_IP
+      ansible_name: worker-04
+    node8:
+      ansible_host: REPLACE_WITH_IP
+      ansible_name: worker-05
+    node9:
+      ansible_host: REPLACE_WITH_IP
+      ansible_name: storage-nfs
+    node10:
+      ansible_host: REPLACE_WITH_IP
+      ansible_name: administrator
+  children:
+    control_plane:
+      hosts:
+        node1:
+        node2:
+        node3:
+    workers:
+      hosts:
+        node4:
+        node5:
+        node6:
+        node7:
+        node8:
+    storages:
+      hosts:
+        node9:
+    administrator:
+      hosts:
+        node10:
+    k8s_cluster:
+      children:
+        control_plane:
+        workers:

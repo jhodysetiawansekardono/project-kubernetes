@@ -1,0 +1,4 @@
+---
+- import_tasks: sysctl.yaml
+- import_tasks: swapoff.yaml
+- import_tasks: check-port.yaml

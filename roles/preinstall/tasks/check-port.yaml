@@ -1,0 +1,35 @@
+---
+- name: Check if kubernetes API port 6443 is already in use
+  wait_for:
+    port: 6443
+    timeout: 1
+    state: stopped
+  ignore_errors: true
+
+- name: Check if nginx-proxy port 8181 is already in use
+  wait_for:
+    port: 8181
+    timeout: 1
+    state: stopped
+  ignore_errors: true
+
+- name: Check if nginx-ingress-controller default server port 8119 is already in use
+  wait_for:
+    port: 8119
+    timeout: 1
+    state: stopped
+  ignore_errors: true
+
+- name: Check if nginx-ingress-controller health check port 10254 is already in use
+  wait_for:
+    port: 10254
+    timeout: 1
+    state: stopped
+  ignore_errors: true
+
+- name: Check if node-exporter port 9100 is already in use
+  wait_for:
+    port: 9100
+    timeout: 1
+    state: stopped
+  ignore_errors: true

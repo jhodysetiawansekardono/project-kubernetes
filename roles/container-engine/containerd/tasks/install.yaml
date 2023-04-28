@@ -1,0 +1,28 @@
+---
+- name: Set DPKG architecture
+  set_fact:
+    dpkg_arch: "{{ 'amd64' if ansible_architecture == 'x86_64' else ansible_architecture }}"
+
+- name: Add apt signing key
+  apt_key:
+    url: https://download.docker.com/linux/ubuntu/gpg
+    state: present
+  environment: "{{ PROXY }}"
+
+- name: Add apt repository
+  apt_repository:
+    repo: deb [arch={{ dpkg_arch }}] https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} stable
+    state: present
+    filename: docker
+  environment: "{{ PROXY }}"
+
+- name: Install packages
+  apt:
+    name: containerd.io
+    state: present
+  environment: "{{ PROXY }}"
+
+- name: Disable auto update
+  dpkg_selections:
+    name: containerd.io
+    selection: hold

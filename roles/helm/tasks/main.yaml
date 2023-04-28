@@ -1,0 +1,29 @@
+---
+- name: Set DPKG architecture
+  set_fact:
+    dpkg_arch: "{{ 'amd64' if ansible_architecture == 'x86_64' else ansible_architecture }}"
+
+- name: Add apt signing key
+  apt_key:
+    url: https://baltocdn.com/helm/signing.asc
+    state: present
+  environment: "{{ PROXY }}"
+
+- name: Add apt repository
+  apt_repository:
+    repo: deb [arch={{ dpkg_arch }}] https://baltocdn.com/helm/stable/debian/ all main
+    state: present
+    filename: helm-stable
+  environment: "{{ PROXY }}"
+
+- name: Install packages
+  apt:
+    name: helm
+    state: present
+    update_cache: yes
+  environment: "{{ PROXY }}"
+
+- name: Disable auto update
+  dpkg_selections:
+    name: helm
+    selection: hold

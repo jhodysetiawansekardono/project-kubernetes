@@ -1,0 +1,21 @@
+---
+- name: Check if kubeadm has been initialized
+  stat:
+    path: /etc/kubernetes/kubelet.conf
+  register: kubeadm_initialized_status
+
+- name: Copy the join command to workers
+  copy:
+    mode: 0777
+    src: /tmp/join-command-workers
+    dest: /tmp/join-command.sh
+  when: not kubeadm_initialized_status.stat.exists
+
+- name: Join the workers node to cluster
+  command: sh /tmp/join-command.sh
+  when: not kubeadm_initialized_status.stat.exists
+
+- name: Removing join command
+  file:
+    path: /tmp/join-command.sh
+    state: absent

@@ -1,0 +1,54 @@
+---
+- name: Load overlay & br_netfilter module
+  modprobe:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - overlay
+    - br_netfilter
+  register: modules
+
+- name: Add overlay & br_netfilter into /etc/modules
+  copy:
+    dest: /etc/modules
+    content: |
+      overlay
+      br_netfilter
+
+    owner: root
+    group: root
+    mode: 0644
+  when: modules is defined and ansible_os_family == 'Debian'
+
+- name: Add overlay & br_netfilter into /etc/modules-load.d/kubernetes.conf
+  copy:
+    dest: /etc/modules-load.d/kubernetes.conf
+    content: |
+      overlay
+      br-netfilter
+
+    owner: root
+    group: root
+    mode: 0644
+  when: modules is defined
+
+- name: Enable net.ipv4.ip_forward in sysctl
+  sysctl:
+    name: net.ipv4.ip_forward
+    value: 1
+    sysctl_file: /etc/sysctl.d/99-sysctl.conf
+    state: present
+    reload: yes
+
+- name: Set bridge-nf-call-{arptables,iptables} to 1
+  sysctl:
+    name: "{{ item }}"
+    state: present
+    value: 1
+    sysctl_file: /etc/sysctl.d/99-sysctl.conf
+    reload: yes
+  with_items:
+    - net.bridge.bridge-nf-call-arptables
+    - net.bridge.bridge-nf-call-ip6tables
+    - net.bridge.bridge-nf-call-iptables
+  when: modules is defined

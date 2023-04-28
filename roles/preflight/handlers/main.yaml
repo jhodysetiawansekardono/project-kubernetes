@@ -1,0 +1,7 @@
+---
+- name: Restart HAProxy
+  systemd:
+    name: haproxy
+    daemon_reload: true
+    state: restarted
+  when: "'administrator' in group_names"
