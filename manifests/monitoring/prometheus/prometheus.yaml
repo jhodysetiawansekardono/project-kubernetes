@@ -32,7 +32,11 @@ spec:
   externalLabels: {}
   image: quay.io/prometheus/prometheus:v2.43.0
   nodeSelector:
-    kubernetes.io/os: linux
+    node-role.kubernetes.io/monitoring: ""
+  tolerations:
+  - key: node-role.kubernetes.io/monitoring
+    effect: NoSchedule
+    operator: Exists
   podMetadata:
     labels:
       app.kubernetes.io/component: prometheus
