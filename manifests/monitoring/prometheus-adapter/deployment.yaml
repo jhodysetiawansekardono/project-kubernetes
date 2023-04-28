@@ -87,7 +87,11 @@ spec:
           name: config
           readOnly: false
       nodeSelector:
-        kubernetes.io/os: linux
+        node-role.kubernetes.io/monitoring: ""
+      tolerations:
+        - key: node-role.kubernetes.io/monitoring
+          effect: NoSchedule
+          operator: Exists
       serviceAccountName: prometheus-adapter
       volumes:
       - emptyDir: {}
