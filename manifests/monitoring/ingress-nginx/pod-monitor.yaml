@@ -16,3 +16,10 @@ spec:
       app.kubernetes.io/name: ingress-nginx
   podMetricsEndpoints:
   - port: metrics
+    honorLabels: true
+    interval: 30s
+    relabelings:
+    - action: replace
+      sourceLabels: 
+      - __meta_kubernetes_pod_node_name
+      targetLabel: node
