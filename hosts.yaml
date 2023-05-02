@@ -27,9 +27,6 @@ all:
     node9:
       ansible_host: REPLACE_WITH_IP
       ansible_name: storage-nfs
-    node10:
-      ansible_host: 1REPLACE_WITH_IP
-      ansible_name: administrator
   children:
     control_plane:
       hosts:
@@ -46,9 +43,6 @@ all:
     storages:
       hosts:
         node9:
-    administrator:
-      hosts:
-        node10:
     k8s_cluster:
       children:
         control_plane:
