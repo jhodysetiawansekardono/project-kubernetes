@@ -1,0 +1,31 @@
+---
+- name: Check kube-proxy configuration
+  shell: |
+    KUBECONFIG=/etc/kubernetes/admin.conf kubectl -n kube-system get cm kube-proxy -o yaml | grep -q "server: https://localhost:6443"
+  register: kube_api_local_check
+  changed_when: false
+  failed_when: false
+  ignore_errors: true
+
+- name: Pull kube-proxy configmap
+  shell: |
+    KUBECONFIG=/etc/kubernetes/admin.conf kubectl -n kube-system get cm kube-proxy -o yaml > /tmp/kube-proxy.yaml
+  when: kube_api_local_check.rc == 1
+
+- name: Configure kube-api endpoint to localhost in kube-proxy configmap
+  replace:
+    path: /tmp/kube-proxy.yaml
+    regexp: 'server: https://([0-9]{1,3}\.){3}[0-9]{1,3}:6443'
+    replace: 'server: https://localhost:6443'
+  when: kube_api_local_check.rc == 1
+
+- name: Updating kube-proxy configmap
+  shell: |
+    KUBECONFIG=/etc/kubernetes/admin.conf kubectl apply --force -f /tmp/kube-proxy.yaml
+  when: kube_api_local_check.rc == 1
+
+- name: Clean manifests
+  file:
+    path: /tmp/kube-proxy.yaml
+    state: absent
+  when: kube_api_local_check.rc == 1

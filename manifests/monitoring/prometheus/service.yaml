@@ -13,9 +13,11 @@ spec:
   ports:
   - name: web
     port: 9090
+    nodePort: 31190
     targetPort: web
   - name: reloader-web
     port: 8080
+    nodePort: 31180
     targetPort: reloader-web
   selector:
     app.kubernetes.io/component: prometheus

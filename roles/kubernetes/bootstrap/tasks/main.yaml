@@ -1,3 +1,4 @@
 ---
 - import_tasks: bootstrap.yaml
 - import_tasks: generate-token.yaml
+- import_tasks: kube-proxy.yaml

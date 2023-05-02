@@ -11,6 +11,12 @@ events {
 }
 
 stream {
+  log_format kube_apiserver_log '$remote_addr [$time_local] "$protocol" $status '
+                                '$bytes_sent $bytes_received "$upstream_addr" '
+                                '$upstream_bytes_sent $upstream_bytes_received '
+                                '$upstream_connect_time $upstream_first_byte_time $upstream_session_time';
+  access_log /var/log/nginx/access.log kube_apiserver_log;
+
   upstream kube_apiserver {
     least_conn;
     {% for host in groups['control_plane'] -%}

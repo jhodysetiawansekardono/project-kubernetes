@@ -59,7 +59,34 @@ spec:
 
 NOTE: Use only one secret for ALL additional scrape configurations.
 
-## Additional References
+# Additional ETCD Certificates
+
+Without authentication/certificates ETCD metrics cannot be scraped from the endpoint. To scrape the metrics from ETCD endpoint you have be on the master node and you need to have access to certificates path `/etc/kubernetes/pki/etcd/`. Follow these commands to create a secret certificates for ETCD:
+```
+kubectl -n monitoring create secret generic etcd-certs \
+--from-literal=ca.crt="$(cat /etc/kubernetes/pki/etcd/ca.crt)" \
+--from-literal=client.crt="$(cat /etc/kubernetes/pki/apiserver-etcd-client.crt)" \
+--from-literal=client.key="$(cat /etc/kubernetes/pki/apiserver-etcd-client.key)"
+```
+
+To add certificates to Prometheus container edit the k8s object of kind prometheus and add volumeMounts and volumes from the secret created above:
+```
+kubectl -n monitoring edit prometheus k8s
+```
+
+```
+spec:
+  volumeMounts:
+  - mountPath: /etc/etcd-certs/
+    name: etcd-certs
+  volumes:
+  - name: etcd-certs
+    secret:
+      secretName: etcd-certs
+```
+
+# Additional References
 
 * [Prometheus Spec](api.md#monitoring.coreos.com/v1.PrometheusSpec)
 * [Additional Scrape Configs](../example/additional-scrape-configs)
+* [Monitoring ETCD](https://hemanth-penmetcha.medium.com/monitoring-etcd-with-prometheus-operator-b9cd8eaff719)

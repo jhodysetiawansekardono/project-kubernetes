@@ -1,47 +1,49 @@
----
 apiVersion: v1
 kind: Service
 metadata:
   labels:
-    app.kubernetes.io/name: kube-scheduler
-  name: kube-scheduler-metrics
+    app.kubernetes.io/part-of: control-plane
+    component: etcd
+  name: etcd-metrics
   namespace: kube-system
 spec:
   clusterIP: None
   ports:
-  - name: https-metrics
-    port: 10259
+  - name: metrics
+    port: 2379
     protocol: TCP
-    targetPort: 10259
+    targetPort: 2379
   type: ClusterIP
   selector:
-    component: kube-scheduler
+    component: etcd
 ---
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
   labels:
-    app.kubernetes.io/name: kube-scheduler
-    app.kubernetes.io/part-of: kube-prometheus
-  name: kube-scheduler
+    component: etcd
+    app.kubernetes.io/part-of: control-plane
+  name: etcd
   namespace: monitoring
 spec:
   endpoints:
   - bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
-    interval: 30s
+    interval: 15s
+    port: metrics
+    scheme: https
     relabelings:
     - action: replace
       sourceLabels:
       - __meta_kubernetes_pod_node_name
       targetLabel: node
-    port: https-metrics
-    scheme: https
     tlsConfig:
-      insecureSkipVerify: true
-  jobLabel: app.kubernetes.io/name
+      caFile: /etc/etcd-certs/ca.crt
+      certFile: /etc/etcd-certs/client.crt
+      keyFile: /etc/etcd-certs/client.key
+  jobLabel: component
   namespaceSelector:
     matchNames:
     - kube-system
   selector:
     matchLabels:
-      app.kubernetes.io/name: kube-scheduler
+      component: etcd

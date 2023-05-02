@@ -18,7 +18,7 @@
 
 - name: Install packages
   apt:
-    name: containerd.io
+    name: containerd.io=1.6.18-1
     state: present
   environment: "{{ PROXY }}"
 
