@@ -1,7 +1,7 @@
-K8S_API_ENDPOINTS: 10.21.0.11
+K8S_API_ENDPOINTS: REPLACE_WITH_MASTER_IP
 K8S_API_PORT: 6443
 CLUSTER_NAME: production
 PROXY:
-  http_proxy: http://10.0.0.15:8118
-  https_proxy: http://10.0.0.15:8118
+  http_proxy: http://REPLACE_WITH_IP:PORT
+  https_proxy: http://REPLACE_WITH_IP:PORT
   no_proxy: localhost,127.0.0.1,10.96.0.1,10.96.0.10,169.254.20.10
