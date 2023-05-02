@@ -3,4 +3,4 @@
 - import_tasks: check-kernel.yaml
 #- import_tasks: update-kernel.yaml
 - import_tasks: depedencies.yaml
-#- import_tasks: administrator.yaml
+- import_tasks: administrator.yaml
