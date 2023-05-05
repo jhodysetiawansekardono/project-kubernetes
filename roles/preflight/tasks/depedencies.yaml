@@ -22,10 +22,10 @@
     - traceroute
   environment: "{{ PROXY }}"
 
-- name: Install NFS Server
-  apt:
-    name: "nfs-kernel-server"
-    update_cache: yes
-    state: present
-  when: "'storages' in group_names"
-  environment: "{{ PROXY }}"
+#- name: Install NFS Server
+#  apt:
+#    name: "nfs-kernel-server"
+#    update_cache: yes
+#    state: present
+#  when: "'storages' in group_names"
+#  environment: "{{ PROXY }}"
